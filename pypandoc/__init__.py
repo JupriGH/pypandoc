@@ -153,7 +153,7 @@ def convert_file(source_file:Union[list, str, Path, Generator], to:str, format:U
     if not _identify_path(source_file):
         raise RuntimeError("source_file is not a valid path")
     if _is_network_path(source_file): # if the source_file is an url
-        format = _identify_format_from_path(source_file, format)
+        #format = _identify_format_from_path(source_file, format)
         return _convert_input(source_file, format, 'path', to, extra_args=extra_args,
                           outputfile=outputfile, filters=filters,
                           verify_format=verify_format, sandbox=sandbox,
@@ -166,7 +166,7 @@ def convert_file(source_file:Union[list, str, Path, Generator], to:str, format:U
         for filepath in source_file:
             discovered_source_files.extend(glob.glob(filepath))
 
-    format = _identify_format_from_path(discovered_source_files[0], format)
+    #format = _identify_format_from_path(discovered_source_files[0], format)
     if len(discovered_source_files) == 1:
         discovered_source_files = discovered_source_files[0]
 
@@ -250,7 +250,7 @@ def _as_unicode(source:any, encoding:str) -> any:
 def _identify_input_type(source:any, format:str, encoding:str='utf-8'):
     path = _identify_path(source)
     if path:
-        format = _identify_format_from_path(source, format)
+        #format = _identify_format_from_path(source, format)
         input_type = 'path'
     else:
         source = _as_unicode(source, encoding)
@@ -259,6 +259,7 @@ def _identify_input_type(source:any, format:str, encoding:str='utf-8'):
 
 
 def normalize_format(fmt):
+    return fmt
     formats = {
         'dbk': 'docbook',
         'md': 'markdown',
@@ -328,7 +329,7 @@ def _validate_formats(format, to, outputfile):
 
 
 def _convert_input(source, format, input_type, to, extra_args=(),
-                   outputfile=None, filters=None, verify_format=True,
+                   outputfile=None, filters=None, verify_format=False, #
                    sandbox=False, cworkdir=None):
     
     _check_log_handler()
@@ -354,8 +355,8 @@ def _convert_input(source, format, input_type, to, extra_args=(),
         input_file = []
     
     input_file = sorted(input_file)
-    args = [__pandoc_path, '--from=' + format]
-
+    args = [__pandoc_path] #, '--from=' + format
+    if format: args.append('--from=' + format)
     args.append('--to=' + to)
 
     args += input_file
